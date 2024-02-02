@@ -12,15 +12,18 @@ SCHWARZ = ( 0, 0, 0)
 WEISS   = ( 255, 255, 255)
 
 # Fenster öffnen
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((640, 480))
 
 # Select the font to use, size, bold, italics
-font = pygame.font.SysFont('Calibri', 50, True, False)
+font = pygame.font.SysFont('Calibri', 36, True, False)
 #orig_surf = font.render('never', True, WEISS)
 #txt_surf = orig_surf.copy()
 # This surface is used to adjust the alpha of the txt_surf.
 #alpha_surf = pygame.Surface(txt_surf.get_size(), pygame.SRCALPHA)
 #alpha = 255  # The current alpha value of the surface.
+text1_point = pygame.math.Vector2( 70, 255)
+text2_point = pygame.math.Vector2(105, 180)
+text3_point = pygame.math.Vector2( 20, 165)
 
 # solange die Variable True ist, soll das Spiel laufen
 active = True
@@ -46,7 +49,7 @@ while active:
     screen.fill(SCHWARZ)
 
     #pygame.draw.polygon(screen, WEISS, [[10,470], [165,200], [320,470]], 2)
-    pygame.draw.polygon(screen, WEISS, [[10,420], [135,200], [270,420]], 2)
+    pygame.draw.polygon(screen, WEISS, [[10,290], [105,120], [200,290]], 2)
 
     # Fenster aktualisieren
     pygame.display.flip()
@@ -58,7 +61,7 @@ while active:
     text1 = font.render("never", True, WEISS)
     #text = pygame.transform.rotate(text, 60)
     #screen.blit(text, [100, 410])
-    screen.blit(text1, [80, 370])
+    screen.blit(text1, text1_point)
     pygame.display.flip() # if screen is your display
     pygame.time.delay(500)
     
@@ -66,7 +69,7 @@ while active:
     text2 = font.render("odd", True, WEISS)
     text2 = pygame.transform.rotate(text2, 120)
     #screen.blit(text, [160, 280])
-    screen.blit(text2, [130, 280])
+    screen.blit(text2, text2_point)
     pygame.display.flip() # if screen is your display
     pygame.time.delay(500)
 
@@ -74,7 +77,7 @@ while active:
     text3 = font.render("or even", True, WEISS)
     text3 = pygame.transform.rotate(text3, 240)
 #    screen.blit(text, [30, 250])
-    screen.blit(text3, [30, 240])
+    screen.blit(text3, text3_point)
     pygame.display.flip() # if screen is your display
     pygame.time.delay(1500)
 
@@ -92,10 +95,10 @@ while active:
         # alpha_surf onto it with the BLEND_RGBA_MULT flag.
         txt_surf.blit(alpha_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         screen.fill((0, 0, 0))
-        screen.blit(txt_surf, (80, 370))
-        pygame.draw.polygon(screen, WEISS, [[10,420], [135,200], [270,420]], 2)
-        screen.blit(text2, [130, 280])
-        screen.blit(text3, [30, 240])
+        screen.blit(txt_surf, text1_point)
+        pygame.draw.polygon(screen, WEISS, [[10,290], [105,120], [200,290]], 2)
+        screen.blit(text2, text2_point)
+        screen.blit(text3, text3_point)
         pygame.display.flip() # if screen is your display
         pygame.time.delay(30)
   
@@ -113,9 +116,9 @@ while active:
         # alpha_surf onto it with the BLEND_RGBA_MULT flag.
         txt_surf.blit(alpha_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         screen.fill((0, 0, 0))
-        screen.blit(txt_surf, [130, 280])
-        pygame.draw.polygon(screen, WEISS, [[10,420], [135,200], [270,420]], 2)
-        screen.blit(text3, [30, 240])
+        screen.blit(txt_surf, text2_point)
+        pygame.draw.polygon(screen, WEISS, [[10,290], [105,120], [200,290]], 2)
+        screen.blit(text3, text3_point)
         pygame.display.flip() # if screen is your display
         pygame.time.delay(30)
 
@@ -133,10 +136,11 @@ while active:
         # alpha_surf onto it with the BLEND_RGBA_MULT flag.
         txt_surf.blit(alpha_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
         screen.fill((0, 0, 0))
-        screen.blit(txt_surf, (30, 240))
-        pygame.draw.polygon(screen, WEISS, [[10,420], [135,200], [270,420]], 2)
+        screen.blit(txt_surf, text3_point)
+        pygame.draw.polygon(screen, WEISS, [[10,290], [105,120], [200,290]], 2)
         pygame.display.flip() # if screen is your display
         pygame.time.delay(30)
+
     pygame.time.delay(1000)
     # Refresh-Zeiten festlegen
     clock.tick(60)

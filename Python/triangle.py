@@ -18,6 +18,10 @@ endpoint = pygame.math.Vector2(630, 470)
 #midpoint = pygame.math.Vector2(630, 470)
 angle = 0
 
+text1_point = pygame.math.Vector2( 70, 255)
+text2_point = pygame.math.Vector2(105, 180)
+text3_point = pygame.math.Vector2( 20, 165)
+
 # solange die Variable True ist, soll das Spiel laufen
 active = True
 
@@ -35,10 +39,11 @@ while active:
     # Spielfeld löschen
     screen.fill(SCHWARZ)
 
-    pygame.draw.polygon(screen, WEISS, [[10,470], [315,0], [630,470]], 2)
+    pygame.draw.polygon(screen, WEISS, [[10,290], [105,120], [200,290]], 2)
+    #pygame.draw.polygon(screen, WEISS, [[10,470], [315,0], [630,470]], 2)
     #pygame.draw.line(screen, WEISS, startpoint, endpoint, 2)
     #angle = 240
-    #pygame.draw.line(screen, WEISS, startpoint, endpoint.rotate(angle), 2)
+    #pygame.draw.line(screen, WEISS, startpoint, endpoint(angle), 2)
     #angle = 120
     #pygame.draw.line(screen, WEISS, endpoint, startpoint.rotate(angle), 2)
 
@@ -47,26 +52,26 @@ while active:
     pygame.time.delay(500)
 
     # Select the font to use, size, bold, italics
-    font = pygame.font.SysFont('Calibri', 96, True, False)
+    font = pygame.font.SysFont('Calibri', 36, True, False)
  
     # Sideways text
-    text = font.render("never", True, WEISS)
+    text1 = font.render("never", True, WEISS)
     #text = pygame.transform.rotate(text, 60)
-    screen.blit(text, [250, 350])
+    screen.blit(text1, text1_point)
     pygame.display.flip() # if screen is your display
     pygame.time.delay(500)
     
     # Sideways text
-    text = font.render("odd", True, WEISS)
-    text = pygame.transform.rotate(text, 120)
-    screen.blit(text, [300, 150])
+    text2 = font.render("odd", True, WEISS)
+    text2 = pygame.transform.rotate(text2, 120)
+    screen.blit(text2, text2_point)
     pygame.display.flip() # if screen is your display
     pygame.time.delay(500)
 
     # Sideways text
-    text = font.render("or even", True, WEISS)
-    text = pygame.transform.rotate(text, 240)
-    screen.blit(text, [100, 100])
+    text3 = font.render("or even", True, WEISS)
+    text3 = pygame.transform.rotate(text3, 240)
+    screen.blit(text3, text3_point)
     pygame.display.flip() # if screen is your display
     pygame.time.delay(1500)
 
