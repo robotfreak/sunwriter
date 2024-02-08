@@ -61,24 +61,90 @@ while active:
     text1 = font.render("never", True, WEISS)
     #text = pygame.transform.rotate(text, 60)
     #screen.blit(text, [100, 410])
-    screen.blit(text1, text1_point)
-    pygame.display.flip() # if screen is your display
+    #screen.blit(text1, text1_point)
+    #pygame.display.flip() # if screen is your display
+
+    txt_surf = text1.copy()
+    # This surface is used to adjust the alpha of the txt_surf.
+    alpha_surf = pygame.Surface(txt_surf.get_size(), pygame.SRCALPHA)
+    alpha = 0  # The current alpha value of the surface.
+    while alpha < 255:
+        # Reduce alpha each frame, but make sure it doesn't get below 0.
+        alpha = min(alpha+4, 255)
+        txt_surf = text1.copy()  # Don't modify the original text surf.
+        # Fill alpha_surf with this color to set its alpha value.
+        alpha_surf.fill((255, 255, 255, alpha))
+        # To make the text surface transparent, blit the transparent
+        # alpha_surf onto it with the BLEND_RGBA_MULT flag.
+        txt_surf.blit(alpha_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        screen.fill((0, 0, 0))
+        screen.blit(txt_surf, text1_point)
+        pygame.draw.polygon(screen, WEISS, [[10,290], [105,120], [200,290]], 2)
+        #screen.blit(text2, text2_point)
+        #screen.blit(text3, text3_point)
+        pygame.display.flip() # if screen is your display
+        pygame.time.delay(30)
+
     pygame.time.delay(500)
     
     # Sideways text
     text2 = font.render("odd", True, WEISS)
     text2 = pygame.transform.rotate(text2, 120)
     #screen.blit(text, [160, 280])
-    screen.blit(text2, text2_point)
-    pygame.display.flip() # if screen is your display
+    #screen.blit(text2, text2_point)
+    #pygame.display.flip() # if screen is your display
+
+    txt_surf = text2.copy()
+    # This surface is used to adjust the alpha of the txt_surf.
+    alpha_surf = pygame.Surface(txt_surf.get_size(), pygame.SRCALPHA)
+    alpha = 0  # The current alpha value of the surface.
+    while alpha < 255:
+        # Reduce alpha each frame, but make sure it doesn't get below 0.
+        alpha = min(alpha+4, 255)
+        txt_surf = text2.copy()  # Don't modify the original text surf.
+        # Fill alpha_surf with this color to set its alpha value.
+        alpha_surf.fill((255, 255, 255, alpha))
+        # To make the text surface transparent, blit the transparent
+        # alpha_surf onto it with the BLEND_RGBA_MULT flag.
+        txt_surf.blit(alpha_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        screen.fill((0, 0, 0))
+        screen.blit(txt_surf, text2_point)
+        pygame.draw.polygon(screen, WEISS, [[10,290], [105,120], [200,290]], 2)
+        screen.blit(text1, text1_point)
+        #screen.blit(text3, text3_point)
+        pygame.display.flip() # if screen is your display
+        pygame.time.delay(30)
+
     pygame.time.delay(500)
 
     # Sideways text
     text3 = font.render("or even", True, WEISS)
     text3 = pygame.transform.rotate(text3, 240)
 #    screen.blit(text, [30, 250])
-    screen.blit(text3, text3_point)
-    pygame.display.flip() # if screen is your display
+#    screen.blit(text3, text3_point)
+#    pygame.display.flip() # if screen is your display
+
+    txt_surf = text3.copy()
+    # This surface is used to adjust the alpha of the txt_surf.
+    alpha_surf = pygame.Surface(txt_surf.get_size(), pygame.SRCALPHA)
+    alpha = 0  # The current alpha value of the surface.
+    while alpha < 255:
+        # Reduce alpha each frame, but make sure it doesn't get below 0.
+        alpha = min(alpha+4, 255)
+        txt_surf = text3.copy()  # Don't modify the original text surf.
+        # Fill alpha_surf with this color to set its alpha value.
+        alpha_surf.fill((255, 255, 255, alpha))
+        # To make the text surface transparent, blit the transparent
+        # alpha_surf onto it with the BLEND_RGBA_MULT flag.
+        txt_surf.blit(alpha_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+        screen.fill((0, 0, 0))
+        screen.blit(txt_surf, text3_point)
+        pygame.draw.polygon(screen, WEISS, [[10,290], [105,120], [200,290]], 2)
+        screen.blit(text1, text1_point)
+        screen.blit(text2, text2_point)
+        pygame.display.flip() # if screen is your display
+        pygame.time.delay(30)
+
     pygame.time.delay(1500)
 
     txt_surf = text1.copy()
