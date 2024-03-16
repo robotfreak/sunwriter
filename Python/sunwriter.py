@@ -68,7 +68,7 @@ def main(txt1, txt2, txt3):
     pygame.init()
 
     # Fenster oeffnen
-    #screen = pygame.display.set_mode((640, 480))
+    #screen = pygame.display.set_mode((600, 380))
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
     side = 2*height/math.sqrt(3)
@@ -77,7 +77,7 @@ def main(txt1, txt2, txt3):
     print("side ", side)
 
     # Select the font to use, size, bold, italics
-    font = pygame.font.SysFont('Calibri', 34, True, False)
+    font = pygame.font.SysFont('Calibri', 72, True, False)
     text1 = font.render(txt1, True, WEISS)
     print(text1.get_size())
     txt1_height = text1.get_height()
@@ -96,8 +96,8 @@ def main(txt1, txt2, txt3):
     txt3_width = text3.get_width()
 
     text1_point = pygame.math.Vector2(width/2-txt1_width/2, height-4-txt1_height)
-    text2_point = pygame.math.Vector2(width/2+side/4-txt1_height-txt2_width/2, height/2-txt2_height/2)
-    text3_point = pygame.math.Vector2(width/2-side/4+txt1_height-txt3_width/2, height/2-txt3_height/2)
+    text2_point = pygame.math.Vector2(width/2+side/4-txt1_height-txt2_width/2+20, height/2-txt2_height/2)
+    text3_point = pygame.math.Vector2(width/2-side/4+txt1_height-txt3_width/2-20, height/2-txt3_height/2)
 
     #text2_point = pygame.math.Vector2(width/2+side/2-txt2_height/2-txt1_height, height/2-txt2_width/2)
     #text3_point = pygame.math.Vector2(width/2-side/2-txt1_height, height/2-txt3_width/2)
@@ -113,17 +113,16 @@ def main(txt1, txt2, txt3):
             print("Spieler hat Quit-Button angeklickt")
 
     # Spielfeld loeschen
-    screen.fill(WEISS)
+    screen.fill(SCHWARZ)
     pygame.display.flip()
     pygame.time.delay(2000)
 
 
     # Spielfeld loeschen
-    screen.fill(SCHWARZ)
-
+ 
     #pygame.draw.polygon(screen, WEISS, [[10,470], [165,200], [320,470]], 2)
     pygame.draw.polygon(screen, WEISS, [[width/2-side/2,height-2], [width/2,0], [width/2+side/2,height-2]], 2)
-    pygame.draw.polygon(screen, WEISS, [[width/2,height-2], [width/2+side/4,height/2], [width/2-side/4,height/2]], 2)
+    #pygame.draw.polygon(screen, WEISS, [[width/2,height-2], [width/2+side/4,height/2], [width/2-side/4,height/2]], 2)
 
     # Fenster aktualisieren
     pygame.display.flip()
@@ -145,11 +144,15 @@ def main(txt1, txt2, txt3):
     # Refresh-Zeiten festlegen
     clock.tick(60)
 
+    screen.fill(WEISS)
+    pygame.display.flip()
+    pygame.time.delay(10000)
+
     pygame.quit()
 
 #main("hallo", "ballo", "knallo")
-#main("never", "odd", "or even")
+main("never", "odd", "or even")
 #main("never odd or even", "never odd or even", "never odd or even")
-main("Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-     "Lorem ipsum dolor sit amet, consectetur adipiscing elit", 
-     "Lorem ipsum dolor sit amet, consectetur adipiscing elit") 
+#main("Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+#     "Lorem ipsum dolor sit amet, consectetur adipiscing elit", 
+#     "Lorem ipsum dolor sit amet, consectetur adipiscing elit") 
