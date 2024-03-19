@@ -7,7 +7,105 @@ from playsound import playsound
 from dotenv import load_dotenv
 from pathlib import Path
 from ctypes import *
+import pygame
+import math
 
+# genutzte Farbe
+ORANGE  = ( 255, 140, 0)
+ROT     = ( 255, 0, 0)
+GRUEN   = ( 0, 255, 0)
+BLAU    = ( 0, 0, 255)
+SCHWARZ = ( 0, 0, 0)
+WEISS   = ( 255, 255, 255)
+
+text1_point = [0,0]
+text2_point = [0,0]
+text3_point = [0,0]
+text1 = ""
+text2 = ""
+text3 = ""
+
+def fadeIn(pg, scrn, txt, txt_pt, txt2, txt2_pt, txt3, txt3_pt, dly):
+    width, height = pg.display.Info().current_w, pg.display.Info().current_h
+    side = 2*height/math.sqrt(3)
+    txt_surf = txt.copy()
+    # This surface is used to adjust the alpha of the txt_surf.
+    alpha_surf = pg.Surface(txt_surf.get_size(), pg.SRCALPHA)
+    print(txt_surf.get_width())
+    alpha = 0  # The current alpha value of the surface.
+    while alpha < 255:
+        # Reduce alpha each frame, but make sure it doesn't get below 0.
+        alpha = min(alpha+4, 255)
+        txt_surf = txt.copy()  # Don't modify the original text surf.
+        # Fill alpha_surf with this color to set its alpha value.
+        alpha_surf.fill((255, 255, 255, alpha))
+        # To make the text surface transparent, blit the transparent
+        # alpha_surf onto it with the BLEND_RGBA_MULT flag.
+        txt_surf.blit(alpha_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        scrn.fill((0, 0, 0))
+        scrn.blit(txt_surf, txt_pt)
+        pg.draw.polygon(scrn, WEISS, [[width/2-side/2,height-2], [width/2,0], [width/2+side/2,height-2]], 2)
+        if (txt2 != None):
+            scrn.blit(txt2, txt2_pt)
+        if (txt3 != None):
+            scrn.blit(txt3, txt3_pt)
+        pg.display.flip() # if screen is your display
+        pg.time.delay(dly)
+
+def fadeOut(pg, scrn, txt, txt_pt, txt2, txt2_pt, txt3, txt3_pt, dly):
+    width, height = pg.display.Info().current_w, pg.display.Info().current_h
+    side = 2*height/math.sqrt(3)
+
+    txt_surf = txt.copy()
+    # This surface is used to adjust the alpha of the txt_surf.
+    alpha_surf = pg.Surface(txt_surf.get_size(), pg.SRCALPHA)
+    alpha = 255  # The current alpha value of the surface.
+    while alpha > 0:
+        # Reduce alpha each frame, but make sure it doesn't get below 0.
+        alpha = max(alpha-4, 0)
+        txt_surf = txt.copy()  # Don't modify the original text surf.
+        # Fill alpha_surf with this color to set its alpha value.
+        alpha_surf.fill((255, 255, 255, alpha))
+        # To make the text surface transparent, blit the transparent
+        # alpha_surf onto it with the BLEND_RGBA_MULT flag.
+        txt_surf.blit(alpha_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        scrn.fill((0, 0, 0))
+        scrn.blit(txt_surf, txt_pt)
+        pg.draw.polygon(scrn, WEISS, [[width/2-side/2,height-2], [width/2,0], [width/2+side/2,height-2]], 2)
+        if (txt2 != None):
+            scrn.blit(txt2, txt2_pt)
+        if (txt3 != None):
+            scrn.blit(txt3, txt3_pt)
+        pg.display.flip() # if screen is your display
+        pg.time.delay(dly)
+
+def initText(width, side, height, txt1, txt2, txt3):
+    global text1_point, text2_point, text3_point, text1, text2, text3
+
+  # Select the font to use, size, bold, italics
+    font = pygame.font.SysFont('Calibri', 32, True, False)
+    text1 = font.render(txt1, True, WEISS)
+    print(text1.get_size())
+    txt1_height = text1.get_height()
+    txt1_width = text1.get_width()
+    text2 = font.render(txt2, True, WEISS)
+    print("before ", text2.get_size())
+    text2 = pygame.transform.rotate(text2, 120)
+    print("after ", text2.get_size())
+    txt2_height = text2.get_height()
+    txt2_width = text2.get_width()
+    text3 = font.render(txt3, True, WEISS)
+    print("before ", text3.get_size())
+    text3 = pygame.transform.rotate(text3, 240)
+    print("after ", text3.get_size())
+    txt3_height = text3.get_height()
+    txt3_width = text3.get_width()
+
+    text1_point = pygame.math.Vector2(width/2-txt1_width/2, height-4-txt1_height)
+    text2_point = pygame.math.Vector2(width/2+side/4-txt1_height-txt2_width/2+10, height/2-txt2_height/2)
+    text3_point = pygame.math.Vector2(width/2-side/4+txt1_height-txt3_width/2-10, height/2-txt3_height/2)
+
+    
 # From alsa-lib Git 3fd4ab9be0db7c7430ebd258f2717a976381715d
 # $ grep -rn snd_lib_error_handler_t
 # include/error.h:59:typedef void (*snd_lib_error_handler_t)(const char *file, int line, const char *function, int err, const char *fmt, ...) /* __attribute__ ((format (printf, 5, 6))) */;
@@ -91,12 +189,10 @@ def chatgpt_response(prompt):
     # Add a holding messsage like the one below to deal with current TTS delays until such time that TTS can be streamed.
     #playsound("sounds/holding.mp3") # There’s an optional second argument, block, which is set to True by default. Setting it to False makes the function run asynchronously.
     # send the converted audio text to chatgpt
-    chat_de =  "Frage an das I Ching Orakel: Was bedeutet die Frage '" + prompt  + "?'. Antworte bitte mit maximal 10 Worten"
-    chat_en =  "Question to the I Ching orakle: What is the asnwer to the question '" + prompt  + "?'. Answe in 10 words, please"
     response = client.chat.completions.create(
         model=model_engine,
-        messages=[{"role": "system", "content": "You are a helpful smart speaker called Jeffers!"},
-                  {"role": "user", "content": chat_en}],
+        messages=[{"role": "system", "content": "You are an I Ching oracle. Answer the questions in 10 words"},
+                  {"role": "user", "content": prompt}],
         max_tokens=1024,
         n=1,
         temperature=0.7,
@@ -120,8 +216,40 @@ def play_audio_file():
     playsound("response.mp3", block=False) # There’s an optional second argument, block, which is set to True by default. Setting it to False makes the function run asynchronously.
 
 def main():
+    # initialisieren von pygame
+    pygame.init()
+
+    # Fenster oeffnen
+    screen = pygame.display.set_mode((640, 480))
+    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
+    side = 2*height/math.sqrt(3)
+    print("width ", width)
+    print("height ", height)
+    print("side ", side)
+
+    # Bildschirm Aktualisierungen einstellen
+    clock = pygame.time.Clock()
+
     # run the program
     while True:
+       # Ueberpruefen, ob Nutzer eine Aktion durchgeführt hat
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                print("Spieler hat Quit-Button angeklickt")
+
+        # Spielfeld loeschen
+        screen.fill(SCHWARZ)
+        pygame.display.flip()
+        pygame.time.delay(2000)
+        #pygame.draw.polygon(screen, WEISS, [[10,470], [165,200], [320,470]], 2)
+        pygame.draw.polygon(screen, WEISS, [[width/2-side/2,height-2], [width/2,0], [width/2+side/2,height-2]], 2)
+        #pygame.draw.polygon(screen, WEISS, [[width/2,height-2], [width/2+side/4,height/2], [width/2-side/4,height/2]], 2)
+
+        # Fenster aktualisieren
+        pygame.display.flip()
+        pygame.time.delay(2000)
+
         if recognize_speech():
             prompt = speech()
             if prompt != "":
@@ -129,6 +257,43 @@ def main():
                 responses = chatgpt_response(prompt)
                 message = responses.choices[0].message.content
                 print(message)
+                words = message.split()
+                i = 0
+                txt1 = ""
+                txt2 = ""
+                txt3 = ""
+                for word in words: 
+                    if i <= 3:
+                        txt1 += word + " "
+                    else:
+                        if i <= 6:
+                            txt2 += word + " "
+                        else: 
+                            if i <= 9:
+                                txt3 += word + " "
+                    i = i+1
+                #txt2 = words[4] + " " + words[5] + " " + words[6] 
+                #txt3 = words[7] + " " + words[8] + " " + words[9]
+                initText(width, side, height, txt1, txt2, txt3)
+                fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
+                pygame.time.delay(500)
+                fadeIn(pygame, screen, text2, text2_point, text1, text1_point, None, None, 60)
+                pygame.time.delay(500)
+                fadeIn(pygame, screen, text3, text3_point, text1, text1_point, text2, text2_point, 60)
+                pygame.time.delay(1500)
+
+                fadeOut(pygame, screen, text1, text1_point, text2, text2_point, text3, text3_point, 60)
+                pygame.time.delay(500)
+                fadeOut(pygame, screen, text2, text2_point, text3, text3_point, None, None, 60)
+                pygame.time.delay(500)
+                fadeOut(pygame, screen, text3, text3_point, None, None, None, None, 60)
+                pygame.time.delay(1000)
+                # Refresh-Zeiten festlegen
+                clock.tick(60)
+
+                screen.fill(WEISS)
+                pygame.display.flip()
+                pygame.time.delay(5000)
             else:
                 continue
             #generate_audio_file(message)
