@@ -9,6 +9,7 @@ from pathlib import Path
 from ctypes import *
 import pygame
 import math
+import random
 
 # genutzte Farbe
 ORANGE  = ( 255, 140, 0)
@@ -167,6 +168,7 @@ model_engine = "gpt-3.5-turbo"
 language = 'de'
 
 def recognize_speech():
+    return True   # FOR TESTING ONLY!!!
     # obtain audio from the microphone
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -198,6 +200,7 @@ def recognize_speech():
             pass
 
 def speech():
+    return "What is the meaning of live"  # FOR TESTING ONLY!!
     # obtain audio from the microphone
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -233,6 +236,34 @@ def chatgpt_response(prompt):
     )
     return response
  
+def chatgpt_poem_response(prompt):
+    # Add a holding messsage like the one below to deal with current TTS delays until such time that TTS can be streamed.
+    #playsound("sounds/holding.mp3") # There’s an optional second argument, block, which is set to True by default. Setting it to False makes the function run asynchronously.
+    # send the converted audio text to chatgpt
+    response = client.chat.completions.create(
+        model=model_engine,
+        messages=[{"role": "system", "content": "You are an poem generator. Generate poems from the user message. The poems shoud not exceed 9 words"},
+                  {"role": "user", "content": prompt}],
+        max_tokens=1024,
+        n=1,
+        temperature=0.7,
+    )
+    return response
+
+def chatgpt_anagram_response(prompt):
+    # Add a holding messsage like the one below to deal with current TTS delays until such time that TTS can be streamed.
+    #playsound("sounds/holding.mp3") # There’s an optional second argument, block, which is set to True by default. Setting it to False makes the function run asynchronously.
+    # send the converted audio text to chatgpt
+    response = client.chat.completions.create(
+        model=model_engine,
+        messages=[{"role": "system", "content": "You are an anagram generator. Generate three anagrams from the user message"},
+                  {"role": "user", "content": prompt}],
+        max_tokens=1024,
+        n=1,
+        temperature=0.7,
+    )
+    return response
+
 def generate_audio_file(message):
     # Add another checking messsage like the one below to improve the user experience.
     #playsound("sounds/checking.mp3") # There’s an optional second argument, block, which is set to True by default. Setting it to False makes the function run asynchronously.
@@ -284,58 +315,87 @@ def main():
         pygame.display.flip()
         pygame.time.delay(2000)
 
-        #if recognize_speech():
-        prompt = speech()
-        if prompt != "":
-            print(f"This is the prompt being sent to OpenAI: {prompt}")
-            responses = chatgpt_response(prompt)
-            message = responses.choices[0].message.content
-            print(message)
-            words = message.split()
-            i = 0
-            txt1 = ""
-            txt2 = ""
-            txt3 = ""
-            for word in words: 
-                if i <= 2:
-                    txt1 += word + " "
-                else:
-                    if i <= 5:
-                        txt2 += word + " "
-                    else: 
-                        if i <= 8:
-                            txt3 += word + " "
-                i = i+1
-            #txt2 = words[4] + " " + words[5] + " " + words[6] 
-            #txt3 = words[7] + " " + words[8] + " " + words[9]
-            initText(width, side, height, txt1, txt2, txt3)
-            fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
-            pygame.time.delay(500)
-            fadeIn(pygame, screen, text2, text2_point, text1, text1_point, None, None, 60)
-            pygame.time.delay(500)
-            fadeIn(pygame, screen, text3, text3_point, text1, text1_point, text2, text2_point, 60)
-            pygame.time.delay(3000)
+        if recognize_speech():
+            prompt = speech()
+            if prompt != "":
+                print(f"This is the prompt being sent to OpenAI: {prompt}")
+                responses = chatgpt_response(prompt)
+                message = responses.choices[0].message.content
+                print(message)
+                words = message.split()
+                i = 0
+                txt1 = ""
+                txt2 = ""
+                txt3 = ""
+                for word in words: 
+                    if i <= 3:
+                        txt1 += word + " "
+                    else:
+                        if i <= 6:
+                            txt2 += word + " "
+                        else: 
+                            if i <= 9:
+                                txt3 += word + " "
+                    i = i+1
+                initText(width, side, height, txt1, txt2, txt3)
+                fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
+                pygame.time.delay(500)
+                fadeIn(pygame, screen, text2, text2_point, text1, text1_point, None, None, 60)
+                pygame.time.delay(500)
+                fadeIn(pygame, screen, text3, text3_point, text1, text1_point, text2, text2_point, 60)
+                pygame.time.delay(3000)
 
-            fadeOutAll(pygame, screen, text1, text1_point, text2, text2_point, text3, text3_point, 60)
-            #fadeOut(pygame, screen, text1, text1_point, text2, text2_point, text3, text3_point, 60)
-            #pygame.time.delay(500)
-            #fadeOut(pygame, screen, text2, text2_point, text3, text3_point, None, None, 60)
-            #pygame.time.delay(500)
-            #fadeOut(pygame, screen, text3, text3_point, None, None, None, None, 60)
-            pygame.time.delay(1000)
-            # Refresh-Zeiten festlegen
-            clock.tick(60)
+                fadeOutAll(pygame, screen, text1, text1_point, text2, text2_point, text3, text3_point, 60)
+                pygame.time.delay(1000)
+                # Refresh-Zeiten festlegen
+                clock.tick(60)
+                
+                # show anagram or poem 
+                #prompt = ""
+                #prompt = words[random.randint(0,8)]
+                #responses = chatgpt_anagram_response(prompt)
+                prompt = ""
+                for i in range(3):
+                    prompt += words[random.randint(0,8)] + " "
+                responses = chatgpt_poem_response(prompt)
+                message = responses.choices[0].message.content
+                print(message)
+                words = message.split()
+                i = 0
+                txt1 = ""
+                txt2 = ""
+                txt3 = ""
+                for word in words: 
+                    if i <= 3:
+                        txt1 += word + " "
+                    else:
+                        if i <= 6:
+                            txt2 += word + " "
+                        else: 
+                            if i <= 9:
+                                txt3 += word + " "
+                    i = i+1
+                initText(width, side, height, txt1, txt2, txt3)
+                fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
+                pygame.time.delay(500)
+                fadeIn(pygame, screen, text2, text2_point, text1, text1_point, None, None, 60)
+                pygame.time.delay(500)
+                fadeIn(pygame, screen, text3, text3_point, text1, text1_point, text2, text2_point, 60)
+                pygame.time.delay(3000)
 
-            screen.fill(WEISS)
-            pygame.display.flip()
-            pygame.time.delay(5000)
+                fadeOutAll(pygame, screen, text1, text1_point, text2, text2_point, text3, text3_point, 60)
+                pygame.time.delay(1000)
+                # Refresh-Zeiten festlegen
+                clock.tick(60)
+
+                screen.fill(WEISS)
+                pygame.display.flip()
+                pygame.time.delay(5000)
+            else:
+                continue
         else:
+            print("Wake word not detected. Listening again...")
             continue
-        #generate_audio_file(message)
-        #play_audio_file()
-        #else:
-        #    print("Wake word not detected. Listening again...")
-        #    continue
 
 if __name__ == "__main__":
     main()
