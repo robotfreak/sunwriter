@@ -79,6 +79,42 @@ def fadeOut(pg, scrn, txt, txt_pt, txt2, txt2_pt, txt3, txt3_pt, dly):
         pg.display.flip() # if screen is your display
         pg.time.delay(dly)
 
+def fadeOutAll(pg, scrn, txt1, txt1_pt, txt2, txt2_pt, txt3, txt3_pt, dly):
+    width, height = pg.display.Info().current_w, pg.display.Info().current_h
+    side = 2*height/math.sqrt(3)
+
+    txt1_surf = txt1.copy()
+    txt2_surf = txt2.copy()
+    txt3_surf = txt3.copy()
+    # This surface is used to adjust the alpha of the txt_surf.
+    alpha1_surf = pg.Surface(txt1_surf.get_size(), pg.SRCALPHA)
+    alpha2_surf = pg.Surface(txt2_surf.get_size(), pg.SRCALPHA)
+    alpha3_surf = pg.Surface(txt3_surf.get_size(), pg.SRCALPHA)
+    alpha = 255  # The current alpha value of the surface.
+    while alpha > 0:
+        # Reduce alpha each frame, but make sure it doesn't get below 0.
+        alpha = max(alpha-4, 0)
+        txt1_surf = txt1.copy()  # Don't modify the original text surf.
+        txt2_surf = txt2.copy()  # Don't modify the original text surf.
+        txt3_surf = txt3.copy()  # Don't modify the original text surf.
+        # Fill alpha_surf with this color to set its alpha value.
+        alpha1_surf.fill((255, 255, 255, alpha))
+        alpha2_surf.fill((255, 255, 255, alpha))
+        alpha3_surf.fill((255, 255, 255, alpha))
+         # To make the text surface transparent, blit the transparent
+        # alpha_surf onto it with the BLEND_RGBA_MULT flag.
+        txt1_surf.blit(alpha1_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        txt2_surf.blit(alpha2_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        txt3_surf.blit(alpha3_surf, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        scrn.fill((0, 0, 0))
+        scrn.blit(txt1_surf, txt1_pt)
+        scrn.blit(txt2_surf, txt2_pt)
+        scrn.blit(txt3_surf, txt3_pt)
+        pg.draw.polygon(scrn, WEISS, [[width/2-side/2,height-2], [width/2,0], [width/2+side/2,height-2]], 2)
+        pg.display.flip() # if screen is your display
+        pg.time.delay(dly)
+
+
 def initText(width, side, height, txt1, txt2, txt3):
     global text1_point, text2_point, text3_point, text1, text2, text3
 
@@ -145,7 +181,7 @@ def recognize_speech():
                 speech = r.recognize_google(audio_stream)
                 print("Recognized Speech:", speech)  # Print the recognized speech for debugging
                 words = speech.lower().split()  # Split the speech into words
-                if "computer" not in words:
+                if "oracle" not in words:
                     print("Wake word not detected in the speech")
                     return False
                 else:
@@ -168,18 +204,16 @@ def speech():
         print("Activated! Waiting for your question...")
         try:
             audio_stream = r.listen(source)
-            # recognize speech using Google Speech Recognition
-            # recognize speech using Google Speech Recognition
+            # recognize speech using OpenAI Speech Recognition
             try:
                 # convert the audio to text
-                print("Google Speech Recognition thinks you said " + r.recognize_google(audio_stream))
-                speech = r.recognize_google(audio_stream)
-                #pixels.think()
-                return speech
+                speech = r.recognize_whisper_api(audio_stream)
+                print("This is what we think was said: " + speech)
             except sr.UnknownValueError:
-                print("Google Speech Recognition could not understand audio")
+                print("Whisper Speech Recognition could not understand audio")
             except sr.RequestError as e:
-                print("Could not request results from Google Speech Recognition service; {0}".format(e))
+                print("Could not request results from Whisper Speech Recognition service; {0}".format(e))
+            return speech
         except KeyboardInterrupt:
             print("Interrupted by User Keyboard")
             pass
@@ -191,7 +225,7 @@ def chatgpt_response(prompt):
     # send the converted audio text to chatgpt
     response = client.chat.completions.create(
         model=model_engine,
-        messages=[{"role": "system", "content": "You are an I Ching oracle. Answer the questions in 10 words"},
+        messages=[{"role": "system", "content": "You are an I Ching oracle. Answer the questions in 9 words"},
                   {"role": "user", "content": prompt}],
         max_tokens=1024,
         n=1,
@@ -250,57 +284,58 @@ def main():
         pygame.display.flip()
         pygame.time.delay(2000)
 
-        if recognize_speech():
-            prompt = speech()
-            if prompt != "":
-                print(f"This is the prompt being sent to OpenAI: {prompt}")
-                responses = chatgpt_response(prompt)
-                message = responses.choices[0].message.content
-                print(message)
-                words = message.split()
-                i = 0
-                txt1 = ""
-                txt2 = ""
-                txt3 = ""
-                for word in words: 
-                    if i <= 3:
-                        txt1 += word + " "
-                    else:
-                        if i <= 6:
-                            txt2 += word + " "
-                        else: 
-                            if i <= 9:
-                                txt3 += word + " "
-                    i = i+1
-                #txt2 = words[4] + " " + words[5] + " " + words[6] 
-                #txt3 = words[7] + " " + words[8] + " " + words[9]
-                initText(width, side, height, txt1, txt2, txt3)
-                fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
-                pygame.time.delay(500)
-                fadeIn(pygame, screen, text2, text2_point, text1, text1_point, None, None, 60)
-                pygame.time.delay(500)
-                fadeIn(pygame, screen, text3, text3_point, text1, text1_point, text2, text2_point, 60)
-                pygame.time.delay(1500)
+        #if recognize_speech():
+        prompt = speech()
+        if prompt != "":
+            print(f"This is the prompt being sent to OpenAI: {prompt}")
+            responses = chatgpt_response(prompt)
+            message = responses.choices[0].message.content
+            print(message)
+            words = message.split()
+            i = 0
+            txt1 = ""
+            txt2 = ""
+            txt3 = ""
+            for word in words: 
+                if i <= 2:
+                    txt1 += word + " "
+                else:
+                    if i <= 5:
+                        txt2 += word + " "
+                    else: 
+                        if i <= 8:
+                            txt3 += word + " "
+                i = i+1
+            #txt2 = words[4] + " " + words[5] + " " + words[6] 
+            #txt3 = words[7] + " " + words[8] + " " + words[9]
+            initText(width, side, height, txt1, txt2, txt3)
+            fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
+            pygame.time.delay(500)
+            fadeIn(pygame, screen, text2, text2_point, text1, text1_point, None, None, 60)
+            pygame.time.delay(500)
+            fadeIn(pygame, screen, text3, text3_point, text1, text1_point, text2, text2_point, 60)
+            pygame.time.delay(3000)
 
-                fadeOut(pygame, screen, text1, text1_point, text2, text2_point, text3, text3_point, 60)
-                pygame.time.delay(500)
-                fadeOut(pygame, screen, text2, text2_point, text3, text3_point, None, None, 60)
-                pygame.time.delay(500)
-                fadeOut(pygame, screen, text3, text3_point, None, None, None, None, 60)
-                pygame.time.delay(1000)
-                # Refresh-Zeiten festlegen
-                clock.tick(60)
+            fadeOutAll(pygame, screen, text1, text1_point, text2, text2_point, text3, text3_point, 60)
+            #fadeOut(pygame, screen, text1, text1_point, text2, text2_point, text3, text3_point, 60)
+            #pygame.time.delay(500)
+            #fadeOut(pygame, screen, text2, text2_point, text3, text3_point, None, None, 60)
+            #pygame.time.delay(500)
+            #fadeOut(pygame, screen, text3, text3_point, None, None, None, None, 60)
+            pygame.time.delay(1000)
+            # Refresh-Zeiten festlegen
+            clock.tick(60)
 
-                screen.fill(WEISS)
-                pygame.display.flip()
-                pygame.time.delay(5000)
-            else:
-                continue
-            #generate_audio_file(message)
-            #play_audio_file()
+            screen.fill(WEISS)
+            pygame.display.flip()
+            pygame.time.delay(5000)
         else:
-            print("Wake word not detected. Listening again...")
             continue
+        #generate_audio_file(message)
+        #play_audio_file()
+        #else:
+        #    print("Wake word not detected. Listening again...")
+        #    continue
 
 if __name__ == "__main__":
     main()
