@@ -25,6 +25,9 @@ text3_point = [0,0]
 text1 = ""
 text2 = ""
 text3 = ""
+font1_size = 32
+font2_size = 32
+font3_size = 32
 
 def fadeIn(pg, scrn, txt, txt_pt, txt2, txt2_pt, txt3, txt3_pt, dly):
     width, height = pg.display.Info().current_w, pg.display.Info().current_h
@@ -115,32 +118,71 @@ def fadeOutAll(pg, scrn, txt1, txt1_pt, txt2, txt2_pt, txt3, txt3_pt, dly):
         pg.display.flip() # if screen is your display
         pg.time.delay(dly)
 
+def getFontSize(txt, side):
+    fsz=32
+    font=pygame.font.SysFont('Calibri', fsz, True, False)
+    text = font.render(txt, True, WEISS)
+    size, height=text.get_size()
+    if float(size) < side:
+        while float(size) < side:
+            fsz += 2
+            font=pygame.font.SysFont('Calibri', fsz, True, False)
+            text = font.render(txt, True, WEISS)
+            size, height=text.get_size()
+            #break
+    elif float(size) > side:    
+        while float(size) > side:
+            fsz -= 2
+            font=pygame.font.SysFont('Calibri', fsz, True, False)
+            text = font.render(txt, True, WEISS)
+            size, height=text.get_size()
+            #break
+    return fsz
+
+
 
 def initText(width, side, height, txt1, txt2, txt3):
     global text1_point, text2_point, text3_point, text1, text2, text3
-
+    font1_size = 32
+    font2_size = 32
+    font3_size = 32
   # Select the font to use, size, bold, italics
-    font = pygame.font.SysFont('Calibri', 32, True, False)
-    text1 = font.render(txt1, True, WEISS)
-    print(text1.get_size())
-    txt1_height = text1.get_height()
-    txt1_width = text1.get_width()
-    text2 = font.render(txt2, True, WEISS)
-    print("before ", text2.get_size())
-    text2 = pygame.transform.rotate(text2, 120)
-    print("after ", text2.get_size())
-    txt2_height = text2.get_height()
-    txt2_width = text2.get_width()
-    text3 = font.render(txt3, True, WEISS)
-    print("before ", text3.get_size())
-    text3 = pygame.transform.rotate(text3, 240)
-    print("after ", text3.get_size())
-    txt3_height = text3.get_height()
-    txt3_width = text3.get_width()
+    font1 = pygame.font.SysFont('Calibri', font1_size, True, False)
+    font2 = pygame.font.SysFont('Calibri', font2_size, True, False)
+    font3 = pygame.font.SysFont('Calibri', font3_size, True, False)
+    if txt1 != "":
+        text1 = font1.render(txt1, True, WEISS)
+        font1_size = getFontSize(txt1, side*0.7)
+        font1 = pygame.font.SysFont('Calibri', font1_size, True, False)
+        text1 = font1.render(txt1, True, WEISS)
+        print(text1.get_size())
+        print(font1_size)
+        txt1_height = text1.get_height()
+        txt1_width = text1.get_width()
+        text1_point = pygame.math.Vector2(width/2-txt1_width/2, height-4-txt1_height)
+    if txt2 != "":
+        text2 = font2.render(txt2, True, WEISS)
+        font2_size = getFontSize(txt2, side*0.7)
+        font2 = pygame.font.SysFont('Calibri', font2_size, True, False)
+        text2 = font2.render(txt2, True, WEISS)
+        print(text2.get_size())
+        text2 = pygame.transform.rotate(text2, 120)
+        #print(text2.get_size())
+        txt2_height = text2.get_height()
+        txt2_width = text2.get_width()
+        text2_point = pygame.math.Vector2(width/2+side/4-txt1_height-txt2_width/2+10, height/2-txt2_height/2)
+    if txt3 != "": 
+        text3 = font3.render(txt3, True, WEISS)
+        font3_size = getFontSize(txt3, side*0.7)
+        font3 = pygame.font.SysFont('Calibri', font3_size, True, False)
+        text3 = font3.render(txt3, True, WEISS)
+        print(text3.get_size())
+        text3 = pygame.transform.rotate(text3, 240)
+        #print(text3.get_size())
+        txt3_height = text3.get_height()
+        txt3_width = text3.get_width()
+        text3_point = pygame.math.Vector2(width/2-side/4+txt1_height-txt3_width/2-10, height/2-txt3_height/2)
 
-    text1_point = pygame.math.Vector2(width/2-txt1_width/2, height-4-txt1_height)
-    text2_point = pygame.math.Vector2(width/2+side/4-txt1_height-txt2_width/2+10, height/2-txt2_height/2)
-    text3_point = pygame.math.Vector2(width/2-side/4+txt1_height-txt3_width/2-10, height/2-txt3_height/2)
 
     
 # From alsa-lib Git 3fd4ab9be0db7c7430ebd258f2717a976381715d
@@ -250,13 +292,17 @@ def chatgpt_poem_response(prompt):
     )
     return response
 
-def chatgpt_anagram_response(prompt):
+def find_longest_word(word_list):  
+    longest_word =  max(word_list, key=len)
+    return longest_word
+
+def chatgpt_palyndrome_response(prompt):
     # Add a holding messsage like the one below to deal with current TTS delays until such time that TTS can be streamed.
     #playsound("sounds/holding.mp3") # There’s an optional second argument, block, which is set to True by default. Setting it to False makes the function run asynchronously.
     # send the converted audio text to chatgpt
     response = client.chat.completions.create(
         model=model_engine,
-        messages=[{"role": "system", "content": "You are an anagram generator. Generate three anagrams from the user message"},
+        messages=[{"role": "system", "content": "You are an palyndrome poem generator. Generate a palyndrome poem from the user input. The answer shoud not exceed 9 words"},
                   {"role": "user", "content": prompt}],
         max_tokens=1024,
         n=1,
@@ -323,18 +369,33 @@ def main():
                 message = responses.choices[0].message.content
                 print(message)
                 words = message.split()
+                size = len(words)
+                ssize = size / 3
+                sadd = size % 3
+                print(size)
+                print(ssize)
+                print(size%3)
+                sofs1 = 0
+                sofs2 = 0
+                if sadd == 2:
+                    sofs1 = 1
+                    sofs2 = 1
+                else:
+                    if sadd == 1:
+                        sofs1 = 1
+                        sofs2 = 0
                 i = 0
                 txt1 = ""
                 txt2 = ""
                 txt3 = ""
                 for word in words: 
-                    if i <= 3:
+                    if i < (ssize+sofs1):
                         txt1 += word + " "
                     else:
-                        if i <= 6:
+                        if i < (2*ssize+sofs1+sofs2):
                             txt2 += word + " "
                         else: 
-                            if i <= 9:
+                            if i < (3*ssize+sofs1+sofs2):
                                 txt3 += word + " "
                     i = i+1
                 initText(width, side, height, txt1, txt2, txt3)
@@ -354,25 +415,42 @@ def main():
                 #prompt = ""
                 #prompt = words[random.randint(0,8)]
                 #responses = chatgpt_anagram_response(prompt)
+                #prompt = find_longest_word(words)
                 prompt = ""
                 for i in range(3):
                     prompt += words[random.randint(0,8)] + " "
-                responses = chatgpt_poem_response(prompt)
+                print(f"This is the prompt being sent to OpenAI: {prompt}")
+                responses = chatgpt_palyndrome_response(prompt)
                 message = responses.choices[0].message.content
                 print(message)
                 words = message.split()
+                size = len(words)
+                ssize = size / 3
+                sadd = size % 3
+                print(size)
+                print(ssize)
+                print(size%3)
+                sofs1 = 0
+                sofs2 = 0
+                if sadd == 2:
+                    sofs1 = 1
+                    sofs2 = 1
+                else:
+                    if sadd == 1:
+                        sofs1 = 1
+                        sofs2 = 0
                 i = 0
                 txt1 = ""
                 txt2 = ""
                 txt3 = ""
                 for word in words: 
-                    if i <= 3:
+                    if i < (ssize+sofs1):
                         txt1 += word + " "
                     else:
-                        if i <= 6:
+                        if i < (2*ssize+sofs1+sofs2):
                             txt2 += word + " "
                         else: 
-                            if i <= 9:
+                            if i < (3*ssize+sofs1+sofs2):
                                 txt3 += word + " "
                     i = i+1
                 initText(width, side, height, txt1, txt2, txt3)

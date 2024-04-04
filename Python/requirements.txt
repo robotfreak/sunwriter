@@ -1,2 +1,6 @@
 pygame
 openai
+gtts
+playsound
+speechrecognition
+pyaudio
