@@ -137,7 +137,7 @@ def getFontSize(txt, side):
             text = font.render(txt, True, WEISS)
             size, height=text.get_size()
             #break
-    return fsz
+    return fsz if fsz < 150 else 150
 
 
 
@@ -206,11 +206,11 @@ load_dotenv()
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 # settings and keys
-model_engine = "gpt-3.5-turbo"
+model_engine = "gpt-4-turbo-preview"
 language = 'de'
 
 def recognize_speech():
-    return True   # FOR TESTING ONLY!!!
+    #return True   # FOR TESTING ONLY!!!
     # obtain audio from the microphone
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -242,7 +242,7 @@ def recognize_speech():
             pass
 
 def speech():
-    return "What is the meaning of live"  # FOR TESTING ONLY!!
+    #return "What is the meaning of live"  # FOR TESTING ONLY!!
     # obtain audio from the microphone
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -272,7 +272,7 @@ def chatgpt_response(prompt):
         model=model_engine,
         messages=[{"role": "system", "content": "You are an I Ching oracle. Answer the questions in 9 words"},
                   {"role": "user", "content": prompt}],
-        max_tokens=1024,
+        max_tokens=256,
         n=1,
         temperature=0.7,
     )
@@ -286,7 +286,7 @@ def chatgpt_poem_response(prompt):
         model=model_engine,
         messages=[{"role": "system", "content": "You are an poem generator. Generate poems from the user message. The poems shoud not exceed 9 words"},
                   {"role": "user", "content": prompt}],
-        max_tokens=1024,
+        max_tokens=256,
         n=1,
         temperature=0.7,
     )
@@ -296,17 +296,19 @@ def find_longest_word(word_list):
     longest_word =  max(word_list, key=len)
     return longest_word
 
-def chatgpt_palyndrome_response(prompt):
+def chatgpt_palindrome_response(prompt):
     # Add a holding messsage like the one below to deal with current TTS delays until such time that TTS can be streamed.
     #playsound("sounds/holding.mp3") # There’s an optional second argument, block, which is set to True by default. Setting it to False makes the function run asynchronously.
     # send the converted audio text to chatgpt
     response = client.chat.completions.create(
         model=model_engine,
-        messages=[{"role": "system", "content": "You are an palyndrome poem generator. Generate a palyndrome poem from the user input. The answer shoud not exceed 9 words"},
+        messages=[{"role": "system", "content": "You are a palindrome poem generator. Generate a palindrome poem from the user input. Answer in less than 6 words"},
                   {"role": "user", "content": prompt}],
-        max_tokens=1024,
-        n=1,
-        temperature=0.7,
+        max_tokens=256,
+        temperature=1,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0
     )
     return response
 
@@ -419,8 +421,8 @@ def main():
                 prompt = ""
                 for i in range(3):
                     prompt += words[random.randint(0,8)] + " "
-                print(f"This is the prompt being sent to OpenAI: {prompt}")
-                responses = chatgpt_palyndrome_response(prompt)
+                print(f"This is the prompt being sent to OpenAI: {message}")
+                responses = chatgpt_palindrome_response(message)
                 message = responses.choices[0].message.content
                 print(message)
                 words = message.split()
