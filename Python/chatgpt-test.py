@@ -284,7 +284,7 @@ def chatgpt_poem_response(prompt):
     # send the converted audio text to chatgpt
     response = client.chat.completions.create(
         model=model_engine,
-        messages=[{"role": "system", "content": "You are an poem generator. Generate poems from the user message. The poems shoud not exceed 9 words"},
+        messages=[{"role": "system", "content": "You are an haiku poem generator. Generate poems from the user message. The poems shoud not exceed 9 words"},
                   {"role": "user", "content": prompt}],
         max_tokens=256,
         n=1,
@@ -302,10 +302,10 @@ def chatgpt_palindrome_response(prompt):
     # send the converted audio text to chatgpt
     response = client.chat.completions.create(
         model=model_engine,
-        messages=[{"role": "system", "content": "You are a palindrome poem generator. Generate a palindrome poem from the user input. Answer in less than 6 words\n".strip()},
+        messages=[{"role": "system", "content": "You are a palindrome poem generator. Answer in less than 10 words\n".strip()},
                   {"role": "user", "content": prompt.strip()}],
         max_tokens=256,
-        temperature=1,
+        temperature=0.7,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -420,13 +420,14 @@ def main():
                 #prompt = ""
                 #prompt = words[random.randint(0,8)]
                 #responses = chatgpt_anagram_response(prompt)
-                #prompt = find_longest_word(words)
                 prompt = ""
-                for i in range(3):
-                    prompt += words[random.randint(0,8)] + " "
-                print(f"This is the prompt being sent to OpenAI: {prompt}")
+                prompt = find_longest_word(words)
+                responses = chatgpt_poem_response(prompt)
+                #for i in range(3):
+                #    prompt += words[random.randint(0,8)] + " "
+                #print(f"This is the prompt being sent to OpenAI: {prompt}")
                 #prompt = prompt.encode('utf-8')
-                responses = chatgpt_palindrome_response(prompt)
+                #responses = chatgpt_palindrome_response(prompt)
                 message = responses.choices[0].message.content
                 print(message)
                 words = []
