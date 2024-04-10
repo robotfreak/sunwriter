@@ -366,6 +366,7 @@ def main():
         if recognize_speech():
             prompt = speech()
             if prompt != "":
+                prompt = prompt.encode('utf-8')
                 print(f"This is the prompt being sent to OpenAI: {prompt}")
                 responses = chatgpt_response(prompt)
                 message = responses.choices[0].message.content
@@ -421,8 +422,10 @@ def main():
                 prompt = ""
                 for i in range(3):
                     prompt += words[random.randint(0,8)] + " "
-                print(f"This is the prompt being sent to OpenAI: {message}")
-                responses = chatgpt_palindrome_response(message)
+                print(f"This is the prompt being sent to OpenAI: {prompt}")
+                prompt = prompt.encode('utf-8')
+
+                responses = chatgpt_palindrome_response(prompt)
                 message = responses.choices[0].message.content
                 print(message)
                 words = message.split()
