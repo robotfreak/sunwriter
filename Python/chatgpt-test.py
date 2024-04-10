@@ -137,7 +137,7 @@ def getFontSize(txt, side):
             text = font.render(txt, True, WEISS)
             size, height=text.get_size()
             #break
-    return fsz if fsz < 150 else 150
+    return fsz if fsz < 80 else 80
 
 
 
@@ -170,7 +170,7 @@ def initText(width, side, height, txt1, txt2, txt3):
         #print(text2.get_size())
         txt2_height = text2.get_height()
         txt2_width = text2.get_width()
-        text2_point = pygame.math.Vector2(width/2+side/4-txt1_height-txt2_width/2+10, height/2-txt2_height/2)
+        text2_point = pygame.math.Vector2(width/2+side/4-txt1_height-txt2_width/2, height/2-txt2_height/2)
     if txt3 != "": 
         text3 = font3.render(txt3, True, WEISS)
         font3_size = getFontSize(txt3, side*0.7)
@@ -181,7 +181,7 @@ def initText(width, side, height, txt1, txt2, txt3):
         #print(text3.get_size())
         txt3_height = text3.get_height()
         txt3_width = text3.get_width()
-        text3_point = pygame.math.Vector2(width/2-side/4+txt1_height-txt3_width/2-10, height/2-txt3_height/2)
+        text3_point = pygame.math.Vector2(width/2-side/4+txt1_height-txt3_width/2, height/2-txt3_height/2)
 
 
     
@@ -302,8 +302,8 @@ def chatgpt_palindrome_response(prompt):
     # send the converted audio text to chatgpt
     response = client.chat.completions.create(
         model=model_engine,
-        messages=[{"role": "system", "content": "You are a palindrome poem generator. Generate a palindrome poem from the user input. Answer in less than 6 words"},
-                  {"role": "user", "content": prompt}],
+        messages=[{"role": "system", "content": "You are a palindrome poem generator. Generate a palindrome poem from the user input. Answer in less than 6 words\n".strip()},
+                  {"role": "user", "content": prompt.strip()}],
         max_tokens=256,
         temperature=1,
         top_p=1,
@@ -366,11 +366,12 @@ def main():
         if recognize_speech():
             prompt = speech()
             if prompt != "":
-                prompt = prompt.encode('utf-8')
+                #prompt = prompt.encode('utf-8')
                 print(f"This is the prompt being sent to OpenAI: {prompt}")
                 responses = chatgpt_response(prompt)
                 message = responses.choices[0].message.content
                 print(message)
+                words = []
                 words = message.split()
                 size = len(words)
                 ssize = size / 3
@@ -423,11 +424,11 @@ def main():
                 for i in range(3):
                     prompt += words[random.randint(0,8)] + " "
                 print(f"This is the prompt being sent to OpenAI: {prompt}")
-                prompt = prompt.encode('utf-8')
-
+                #prompt = prompt.encode('utf-8')
                 responses = chatgpt_palindrome_response(prompt)
                 message = responses.choices[0].message.content
                 print(message)
+                words = []
                 words = message.split()
                 size = len(words)
                 ssize = size / 3
