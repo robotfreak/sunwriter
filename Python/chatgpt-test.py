@@ -4,7 +4,7 @@ import pyaudio
 import speech_recognition as sr
 from gtts import gTTS
 from playsound import playsound
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from pathlib import Path
 from ctypes import *
 import pygame
@@ -28,6 +28,8 @@ text3 = ""
 font1_size = 32
 font2_size = 32
 font3_size = 32
+max_font_size = 150
+font_name = "Calibri"
 
 def fadeIn(pg, scrn, txt, txt_pt, txt2, txt2_pt, txt3, txt3_pt, dly):
     width, height = pg.display.Info().current_w, pg.display.Info().current_h
@@ -119,41 +121,42 @@ def fadeOutAll(pg, scrn, txt1, txt1_pt, txt2, txt2_pt, txt3, txt3_pt, dly):
         pg.time.delay(dly)
 
 def getFontSize(txt, side):
+    global font_name, max_font_size
     fsz=32
-    font=pygame.font.SysFont('Calibri', fsz, True, False)
+    font=pygame.font.SysFont(font_name, fsz, True, False)
     text = font.render(txt, True, WEISS)
     size, height=text.get_size()
     if float(size) < side:
         while float(size) < side:
             fsz += 2
-            font=pygame.font.SysFont('Calibri', fsz, True, False)
+            font=pygame.font.SysFont(font_name, fsz, True, False)
             text = font.render(txt, True, WEISS)
             size, height=text.get_size()
             #break
     elif float(size) > side:    
         while float(size) > side:
             fsz -= 2
-            font=pygame.font.SysFont('Calibri', fsz, True, False)
+            font=pygame.font.SysFont(font_name, fsz, True, False)
             text = font.render(txt, True, WEISS)
             size, height=text.get_size()
             #break
-    return fsz if fsz < 80 else 80
+    return fsz if fsz < max_font_size else max_font_size
 
 
 
 def initText(width, side, height, txt1, txt2, txt3):
-    global text1_point, text2_point, text3_point, text1, text2, text3
+    global font_name, text1_point, text2_point, text3_point, text1, text2, text3
     font1_size = 32
     font2_size = 32
     font3_size = 32
   # Select the font to use, size, bold, italics
-    font1 = pygame.font.SysFont('Calibri', font1_size, True, False)
-    font2 = pygame.font.SysFont('Calibri', font2_size, True, False)
-    font3 = pygame.font.SysFont('Calibri', font3_size, True, False)
+    font1 = pygame.font.SysFont(font_name, font1_size, True, False)
+    font2 = pygame.font.SysFont(font_name, font2_size, True, False)
+    font3 = pygame.font.SysFont(font_name, font3_size, True, False)
     if txt1 != "":
         text1 = font1.render(txt1, True, WEISS)
         font1_size = getFontSize(txt1, side*0.7)
-        font1 = pygame.font.SysFont('Calibri', font1_size, True, False)
+        font1 = pygame.font.SysFont(font_name, font1_size, True, False)
         text1 = font1.render(txt1, True, WEISS)
         print(text1.get_size())
         print(font1_size)
@@ -163,7 +166,7 @@ def initText(width, side, height, txt1, txt2, txt3):
     if txt2 != "":
         text2 = font2.render(txt2, True, WEISS)
         font2_size = getFontSize(txt2, side*0.7)
-        font2 = pygame.font.SysFont('Calibri', font2_size, True, False)
+        font2 = pygame.font.SysFont(font_name, font2_size, True, False)
         text2 = font2.render(txt2, True, WEISS)
         print(text2.get_size())
         text2 = pygame.transform.rotate(text2, 120)
@@ -174,7 +177,7 @@ def initText(width, side, height, txt1, txt2, txt3):
     if txt3 != "": 
         text3 = font3.render(txt3, True, WEISS)
         font3_size = getFontSize(txt3, side*0.7)
-        font3 = pygame.font.SysFont('Calibri', font3_size, True, False)
+        font3 = pygame.font.SysFont(font_name, font3_size, True, False)
         text3 = font3.render(txt3, True, WEISS)
         print(text3.get_size())
         text3 = pygame.transform.rotate(text3, 240)
@@ -201,7 +204,7 @@ asound.snd_lib_error_set_handler(c_error_handler)
 
 
 # Load the environment variables
-load_dotenv()
+#load_dotenv()
 # Create an OpenAI API client
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -341,6 +344,7 @@ def main():
     print("width ", width)
     print("height ", height)
     print("side ", side)
+    words = []
 
     # Bildschirm Aktualisierungen einstellen
     clock = pygame.time.Clock()
@@ -365,6 +369,13 @@ def main():
         pygame.time.delay(2000)
 
         if recognize_speech():
+            txt1="???"
+            txt2=""
+            txt3=""
+            initText(width, side, height, txt1, txt2, txt3)
+            fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
+            pygame.time.delay(500)
+
             prompt = speech()
             if prompt != "":
                 #prompt = prompt.encode('utf-8')
@@ -372,7 +383,7 @@ def main():
                 responses = chatgpt_response(prompt)
                 message = responses.choices[0].message.content
                 print(message)
-                words = []
+                words.clear()
                 words = message.split()
                 size = len(words)
                 ssize = size / 3
@@ -430,7 +441,7 @@ def main():
                 #responses = chatgpt_palindrome_response(prompt)
                 message = responses.choices[0].message.content
                 print(message)
-                words = []
+                words.clear()
                 words = message.split()
                 size = len(words)
                 ssize = size / 3
