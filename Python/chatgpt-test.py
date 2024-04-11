@@ -212,6 +212,15 @@ client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 model_engine = "gpt-4-turbo-preview"
 language = 'de'
 
+prompt_list = ["What is the meaning of live?",
+               "Warum ist der Himmel blau?",
+               "Wie wird das Wetter im Sommer?",
+               "What will the weather be in summer?",
+               "Will I find a partner this year?",
+               "Why is the sky blue?",
+               "Was ist der Sinn des Lebens",
+               "Werde ich dieses Jahr einen Partner finden?"]
+
 def recognize_speech():
     return True   # FOR TESTING ONLY!!!
     # obtain audio from the microphone
@@ -245,7 +254,10 @@ def recognize_speech():
             pass
 
 def speech():
-    return "What is the meaning of live"  # FOR TESTING ONLY!!
+    global prompt_list
+    prompt = prompt_list[random.randint(0,7)]
+    return prompt
+    #return "What is the meaning of live"  # FOR TESTING ONLY!!
     # obtain audio from the microphone
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -287,7 +299,7 @@ def chatgpt_poem_response(prompt):
     # send the converted audio text to chatgpt
     response = client.chat.completions.create(
         model=model_engine,
-        messages=[{"role": "system", "content": "You are an haiku poem generator. Generate poems from the user message. The poems shoud not exceed 9 words"},
+        messages=[{"role": "system", "content": "You are an haiku poem generator. Generate poems in the language of the user message. The poems shoud not exceed 9 words"},
                   {"role": "user", "content": prompt}],
         max_tokens=256,
         n=1,
@@ -379,6 +391,12 @@ def main():
 
             prompt = speech()
             if prompt != "":
+                txt1=prompt
+                txt2=""
+                txt3=""
+                initText(width, side, height, txt1, txt2, txt3)
+                fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
+                pygame.time.delay(500)
                 #prompt = prompt.encode('utf-8')
                 print(f"This is the prompt being sent to OpenAI: {prompt}")
                 responses = chatgpt_response(prompt)
