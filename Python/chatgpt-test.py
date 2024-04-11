@@ -213,7 +213,7 @@ model_engine = "gpt-4-turbo-preview"
 language = 'de'
 
 def recognize_speech():
-    #return True   # FOR TESTING ONLY!!!
+    return True   # FOR TESTING ONLY!!!
     # obtain audio from the microphone
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -245,7 +245,7 @@ def recognize_speech():
             pass
 
 def speech():
-    #return "What is the meaning of live"  # FOR TESTING ONLY!!
+    return "What is the meaning of live"  # FOR TESTING ONLY!!
     # obtain audio from the microphone
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -338,7 +338,8 @@ def main():
     # Fenster oeffnen
     #screen = pygame.display.set_mode((280, 200))  # small screen
     #screen = pygame.display.set_mode((640, 480))  # big screen
-    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((1280, 720))  # big screen
+    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
     side = 2*height/math.sqrt(3)
     print("width ", width)
