@@ -213,13 +213,17 @@ model_engine = "gpt-4-turbo-preview"
 language = 'de'
 
 prompt_list = ["What is the meaning of live?",
+               "Quel est le sens de la vie?",
                "Warum ist der Himmel blau?",
+               "Pourquoi le ciel est bleu?",
                "Wie wird das Wetter im Sommer?",
-               "What will the weather be in summer?",
+               "Quel temps fera-t-il en été ?",
+               "What will the weather be like in summer?",
                "Will I find a partner this year?",
                "Why is the sky blue?",
                "Was ist der Sinn des Lebens",
-               "Werde ich dieses Jahr einen Partner finden?"]
+               "Werde ich dieses Jahr einen Partner finden?",
+               "Vais-je trouver un partenaire cette année?"]
 
 def recognize_speech():
     return True   # FOR TESTING ONLY!!!
@@ -255,7 +259,7 @@ def recognize_speech():
 
 def speech():
     global prompt_list
-    prompt = prompt_list[random.randint(0,7)]
+    prompt = prompt_list[random.randint(0,12)]
     return prompt
     #return "What is the meaning of live"  # FOR TESTING ONLY!!
     # obtain audio from the microphone
@@ -382,12 +386,18 @@ def main():
         pygame.time.delay(2000)
 
         if recognize_speech():
-            txt1="???"
-            txt2=""
-            txt3=""
-            initText(width, side, height, txt1, txt2, txt3)
-            fadeIn(pygame, screen, text1, text1_point, None, None, None, None, 60)
-            pygame.time.delay(500)
+            txt="?"
+            font = pygame.font.SysFont(font_name, 96, True, False)
+            text = font.render(txt, True, WEISS)
+            text = pygame.transform.rotate(text, 180)
+            text_point = pygame.math.Vector2(width/2, height/2)
+            screen.blit(text, text_point)
+            # Fenster aktualisieren
+            pygame.display.flip()
+            pygame.time.delay(2000)
+            pygame.draw.polygon(screen, WEISS, [[width/2-side/2,height-2], [width/2,0], [width/2+side/2,height-2]], 2)
+            # Fenster aktualisieren
+            pygame.display.flip()
 
             prompt = speech()
             if prompt != "":
