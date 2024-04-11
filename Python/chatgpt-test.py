@@ -259,7 +259,7 @@ def recognize_speech():
 
 def speech():
     global prompt_list
-    prompt = prompt_list[random.randint(0,12)]
+    prompt = prompt_list[random.randint(0,11)]
     return prompt
     #return "What is the meaning of live"  # FOR TESTING ONLY!!
     # obtain audio from the microphone
