@@ -333,9 +333,9 @@ def main():
     pygame.init()
 
     # Fenster oeffnen
-    screen = pygame.display.set_mode((280, 200))  # big screen
+    #screen = pygame.display.set_mode((280, 200))  # small screen
     #screen = pygame.display.set_mode((640, 480))  # big screen
-    #screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
     side = 2*height/math.sqrt(3)
     print("width ", width)
